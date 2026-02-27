@@ -1,160 +1,164 @@
 DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Temperature Dashboard</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #dfe9f3, #ffffff);
-      margin: 0;
-      padding: 40px 20px;
-      color: #333;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Temperature Dashboard</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to right, #dfe9f3, #ffffff);
+        margin: 0;
+        padding: 40px 20px;
+        color: #333;
+      }
 
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 40px;
-    }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 40px;
+      }
 
-    .form-container {
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-      max-width: 450px;
-      margin: 0 auto 40px;
-      transition: all 0.3s ease;
-    }
+      .form-container {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        max-width: 450px;
+        margin: 0 auto 40px;
+        transition: all 0.3s ease;
+      }
 
-    .form-container input,
-    .form-container button {
-      width: 100%;
-      padding: 12px;
-      margin: 12px 0;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      transition: border-color 0.3s;
-    }
+      .form-container input,
+      .form-container button {
+        width: 100%;
+        padding: 12px;
+        margin: 12px 0;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        transition: border-color 0.3s;
+      }
 
-    .form-container input:focus {
-      border-color: #3498db;
-      outline: none;
-    }
+      .form-container input:focus {
+        border-color: #3498db;
+        outline: none;
+      }
 
-    .form-container button {
-      background: #3498db;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-    }
+      .form-container button {
+        background: #3498db;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+      }
 
-    .form-container button:hover {
-      background: #2980b9;
-    }
+      .form-container button:hover {
+        background: #2980b9;
+      }
 
-    #dashboard {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
+      #dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+      }
 
-    .city {
-      background: #ffffff;
-      padding: 20px;
-      width: 250px;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+      .city {
+        background: #ffffff;
+        padding: 20px;
+        width: 250px;
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
 
-    .city:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
+      .city:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
 
-    .city h2 {
-      margin-top: 0;
-      color: #34495e;
-    }
+      .city h2 {
+        margin-top: 0;
+        color: #34495e;
+      }
 
-    .city p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
-  </style>
-</head>
-<body>
+      .city p {
+        margin: 8px 0;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Real-Time Temperature Dashboard</h1>
 
-  <h1>Real-Time Temperature Dashboard</h1>
+    <div class="form-container">
+      <input type="text" id="cityName" placeholder="Enter city name" />
+      <input
+        type="number"
+        id="cityTemp"
+        placeholder="Enter temperature in Celsius"
+      />
+      <button onclick="addCity()">Add City</button>
+    </div>
 
-  <div class="form-container">
-    <input type="text" id="cityName" placeholder="Enter city name" />
-    <input type="number" id="cityTemp" placeholder="Enter temperature in Celsius" />
-    <button onclick="addCity()">Add City</button>
-  </div>
+    <div id="dashboard"></div>
 
-  <div id="dashboard"></div>
+    <script>
+      let cities = [
+        { name: "Toronto", celsius: -5 },
+        { name: "London", celsius: 7 },
+        { name: "Cairo", celsius: 25 },
+      ];
 
-  <script>
-    let cities = [
-      { name: 'Toronto', celsius: -5 },
-      { name: 'London', celsius: 7 },
-      { name: 'Cairo', celsius: 25 }
-    ];
+      const toFahrenheit = (c) => ((c * 9) / 5 + 32).toFixed(1);
+      const getAdvisory = (c) => {
+        if (c < 0) return "Freezing ";
+        else if (c <= 10) return "Cold ";
+        else if (c <= 20) return "Mild ";
+        else if (c <= 30) return "Warm ";
+        else return "Hot ";
+      };
 
-    const toFahrenheit = c => (c * 9 / 5 + 32).toFixed(1);
-    const getAdvisory = c => {
-      if (c < 0) return 'Freezing ❄️';
-      else if (c <= 10) return 'Cold 🧥';
-      else if (c <= 20) return 'Mild 🌤️';
-      else if (c <= 30) return 'Warm ☀️';
-      else return 'Hot 🔥';
-    };
-
-    const displayCities = () => {
-      const dashboard = document.getElementById('dashboard');
-      dashboard.innerHTML = '';
-      cities.forEach(city => {
-        const fahrenheit = toFahrenheit(city.celsius);
-        const advisory = getAdvisory(city.celsius);
-        const cityDiv = document.createElement('div');
-        cityDiv.className = 'city';
-        cityDiv.innerHTML = `
+      const displayCities = () => {
+        const dashboard = document.getElementById("dashboard");
+        dashboard.innerHTML = "";
+        cities.forEach((city) => {
+          const fahrenheit = toFahrenheit(city.celsius);
+          const advisory = getAdvisory(city.celsius);
+          const cityDiv = document.createElement("div");
+          cityDiv.className = "city";
+          cityDiv.innerHTML = `
           <h2>${city.name}</h2>
           <p>Celsius: ${city.celsius}°C</p>
           <p>Fahrenheit: ${fahrenheit}°F</p>
           <p>Status: ${advisory}</p>
         `;
-        dashboard.appendChild(cityDiv);
-      });
-    };
+          dashboard.appendChild(cityDiv);
+        });
+      };
 
-    const addCity = () => {
-      const nameInput = document.getElementById('cityName');
-      const tempInput = document.getElementById('cityTemp');
-      const name = nameInput.value.trim();
-      const temp = parseFloat(tempInput.value);
+      const addCity = () => {
+        const nameInput = document.getElementById("cityName");
+        const tempInput = document.getElementById("cityTemp");
+        const name = nameInput.value.trim();
+        const temp = parseFloat(tempInput.value);
 
-      if (name === '' || isNaN(temp)) {
-        alert('Please enter a valid city name and temperature.');
-        return;
-      }
+        if (name === "" || isNaN(temp)) {
+          alert("Please enter a valid city name and temperature.");
+          return;
+        }
 
-      cities.push({ name: name, celsius: temp });
-      nameInput.value = '';
-      tempInput.value = '';
+        cities.push({ name: name, celsius: temp });
+        nameInput.value = "";
+        tempInput.value = "";
+        displayCities();
+      };
+
       displayCities();
-    };
-
-    displayCities();
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>
